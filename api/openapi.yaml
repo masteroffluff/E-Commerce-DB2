@@ -1,0 +1,725 @@
+openapi: 3.0.1
+info:
+  title: eccomerce API
+  description: 'Eccomerce API for codecademy '
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /login:
+    summary: log in existing user
+    description: 'log in an existing user basis password and email address. '
+    get:
+      tags:
+      - user
+      summary: login form
+      description: render the login form
+      operationId: get_login
+      responses:
+        default:
+          description: Default error sample response
+      x-swagger-router-controller: User
+    post:
+      tags:
+      - user
+      summary: logs a user into the database
+      description: Logs the user into the database based on email address and password
+        returns the id of the customer.
+      operationId: post_login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        "201":
+          description: User logged in
+        "400":
+          description: Bad Request
+        "401":
+          description: Password incorrect
+        "404":
+          description: User not found
+      x-swagger-router-controller: User
+  /logout:
+    summary: log out user
+    get:
+      tags:
+      - user
+      summary: log out
+      description: log user out and redirect them to the log in route.
+      operationId: get_logout
+      responses:
+        "200":
+          description: ok
+        "400":
+          description: Bad Request
+      x-swagger-router-controller: User
+  /register:
+    summary: register new user
+    get:
+      tags:
+      - user
+      summary: 'render registration form '
+      description: Passes the instruction to render the registration form
+      operationId: get_register
+      responses:
+        default:
+          description: Default error sample response
+      x-swagger-router-controller: User
+    post:
+      tags:
+      - user
+      summary: adds new user
+      description: "adds new user basis email, passowrd and address. "
+      operationId: post_register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer_out'
+              examples:
+                Elmer Fudd:
+                  value: "{\n    \"customers_id\": 1,\n    \"first_name\": \"Elmur\
+                    \ J\",\n    \"last_name\": \"Fudd\",\n    \"email\": \"wabbithunter@hotmail.com\"\
+                    ,\n    \"street1\": \"Building 8,Warner Drive\",\n    \"street2\"\
+                    : \"\",\n    \"postcode\": \"WD25 7LP\",\n    \"city\": \"Leavesden\"\
+                    ,\n    \"country_code\": \"GB\",\n}          "
+        "400":
+          description: Bad Request
+      x-swagger-router-controller: User
+  /user:
+    summary: the path for the currently logged in user details
+    get:
+      tags:
+      - user
+      summary: get the user details
+      description: ""
+      operationId: get_user
+      responses:
+        "200":
+          description: Customer Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer_out'
+              examples:
+                Elmer Fudd:
+                  value: |-
+                    {
+                        "customers_id": 1,
+                        "first_name": "Elmur J",
+                        "last_name": "Fudd",
+                        "email": "wabbithunter@hotmail.com",
+                        "street1": "Building 8,Warner Drive",
+                        "street2": "",
+                        "postcode": "WD25 7LP",
+                        "city": "Leavesden",
+                        "country_code": "GB",
+                    }
+        "400":
+          description: Bad request
+        "404":
+          description: Customer not found
+      x-swagger-router-controller: User
+    put:
+      tags:
+      - user
+      summary: update the user
+      description: update the user's details
+      operationId: update_user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+        required: true
+      responses:
+        "201":
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer_out'
+              examples:
+                Elmer Fudd:
+                  value: "{\n    \"customers_id\": 1,\n    \"first_name\": \"Elmur\
+                    \ J\",\n    \"last_name\": \"Fudd\",\n    \"email\": \"wabbithunter@hotmail.com\"\
+                    ,\n    \"street1\": \"Building 8,Warner Drive\",\n    \"street2\"\
+                    : \"\",\n    \"postcode\": \"WD25 7LP\",\n    \"city\": \"Leavesden\"\
+                    ,\n    \"country_code\": \"GB\",\n}          "
+        "400":
+          description: Bad request
+        "401":
+          description: Password not correct
+        "404":
+          description: User not found
+      x-swagger-router-controller: User
+  /cart:
+    summary: path to add cart items
+    description: "path to create a new cart, clear a cart, get all the items, add,\
+      \ remove and clear an item"
+    get:
+      tags:
+      - cart
+      summary: Get all items in the cart
+      description: ""
+      operationId: get_cart
+      responses:
+        "200":
+          description: Updated basket
+          content:
+            application/json:
+              examples:
+                plan#1:
+                  value: "{\"customer_id\":1234,\n\"cart_id:456,\n\"item_list\":[\n\
+                    \     {\"id\":1,\n     \"name\":\"ACME Rocket\",\n     \"volume\"\
+                    :2\n     \"price\":19.99},\n     {\"id\":8,\n     \"name\":\"\
+                    ACME Giant Magnet\",\n     \"volume\":1\n     \"price\":24.99},\n\
+                    \     {\"id\":3,\n     \"name\":\"ACME Anvil\",\n     \"volume\"\
+                    :3\n     \"price\":4.99},\n     {\"id\":11,\n     \"name\":\"\
+                    ACME Invisible Paint\",\n     \"volume\":5\n     \"price\":4.99}\n\
+                    \     {\"id\":7,\n     \"name\":\"ACME Jet-Propelled Roller Skates\"\
+                    ,\n     \"volume\":4\n     \"price\":19.99}\n     ]\n} "
+        "400":
+          description: Bad request
+      x-swagger-router-controller: Cart
+    delete:
+      tags:
+      - cart
+      summary: clear the entire cart
+      description: ""
+      operationId: clear_cart
+      responses:
+        "200":
+          description: cleared cart
+          content:
+            application/json:
+              examples:
+                empty cart:
+                  value: |-
+                    {"customer_id":1234,
+                    "cart_id:456,
+                    "item_list":[]
+                    }
+        "400":
+          description: Bad request
+      x-swagger-router-controller: Cart
+  /cart/{item}/{volume}:
+    put:
+      tags:
+      - cart
+      summary: update the cart item volume
+      description: ""
+      operationId: update_cart_item
+      parameters:
+      - name: item
+        in: path
+        description: The item identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: volume
+        in: path
+        description: The volume identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+              examples:
+                updated cart with new volume:
+                  value: "{\"customer_id\":1234,\n\"cart_id:456,\n\"item_list\":[\n\
+                    \     {\"id\":1,\n     \"name\":\"ACME Rocket\",\n     \"volume\"\
+                    :2\n     \"price\":19.99},\n     {\"id\":8,\n     \"name\":\"\
+                    ACME Giant Magnet\",\n     \"volume\":1\n     \"price\":24.99},\n\
+                    \     {\"id\":3,\n     \"name\":\"ACME Anvil\",\n     \"volume\"\
+                    :3\n     \"price\":4.99},\n     {\"id\":11,\n     \"name\":\"\
+                    ACME Invisible Paint\",\n     \"volume\":5\n     \"price\":4.99}\n\
+                    \     ]\n}  "
+        "400":
+          description: Bad request
+        "404":
+          description: Item not found
+      x-swagger-router-controller: Cart
+    post:
+      tags:
+      - cart
+      summary: a an item to the cart
+      description: ""
+      operationId: add_to_cart
+      parameters:
+      - name: item
+        in: path
+        description: The item identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: volume
+        in: path
+        description: The volume identifier
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+              examples:
+                updated cart:
+                  value: |-
+                    {"customer_id":1234,
+                    "cart_id:456,
+                    "item_list":[
+                         {"id":1,
+                         "name":"ACME Rocket",
+                         "volume":3
+                         "price":19.99},
+                         {"id":8,
+                         "name":"ACME Giant Magnet",
+                         "volume":1
+                         "price":24.99},
+                         {"id":3,
+                         "name":"ACME Anvil",
+                         "volume":3
+                         "price":4.99},
+                         {"id":11,
+                         "name":"ACME Invisible Paint",
+                         "volume":5
+                         "price":4.99}
+                         {"id":7,
+                         "name":"ACME Jet-Propelled Roller Skates",
+                         "volume":4
+                         "price":19.99}
+                         ]
+                    }
+        "400":
+          description: Bad request
+        "404":
+          description: Item not found
+      x-swagger-router-controller: Cart
+  /cart/{item}:
+    delete:
+      tags:
+      - cart
+      summary: remove a cart item
+      description: ""
+      operationId: delete_cart_item
+      parameters:
+      - name: item
+        in: path
+        description: The ID of the item to be removed from the cart
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+              examples:
+                updated cart with item removed:
+                  value: "{\"customer_id\":1234,\n\"cart_id:456,\n\"item_list\":[\n\
+                    \     {\"id\":8,\n     \"name\":\"ACME Giant Magnet\",\n     \"\
+                    volume\":1\n     \"price\":24.99},\n     {\"id\":3,\n     \"name\"\
+                    :\"ACME Anvil\",\n     \"volume\":3\n     \"price\":4.99},\n \
+                    \    {\"id\":11,\n     \"name\":\"ACME Invisible Paint\",\n  \
+                    \   \"volume\":5\n     \"price\":4.99}\n     ]\n} "
+        "400":
+          description: Bad request
+        "404":
+          description: Item not found
+      x-swagger-router-controller: Cart
+  /items:
+    summary: path for all the items
+    description: items
+    get:
+      tags:
+      - items
+      summary: 'gets a list of all products '
+      description: ""
+      operationId: get_items
+      responses:
+        "200":
+          description: updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+              examples:
+                list of items:
+                  value: |-
+                    {item_list:[
+                    {
+                      "item_id": 1,
+                      "name": "ACME Rocket",
+                      "description": "Embark on an Elevated Journey! The ACME Rocket: A Refined Approach to Soaring Heights. Elevate Your Travels with Ease.",
+                      "category": "Travel",
+                      "price": "£19.99"
+                    },
+                    {
+                      "item_id": 2,
+                      "name": "ACME Dynamite",
+                      "description": "A Controlled Burst of Energy! ACME Dynamite, Precision Explosives for Discerning Users.",
+                      "category": "Hardware",
+                      "price": "£19.99"
+                    },
+                    {
+                      "item_id": 3,
+                      "name": "ACME Anvil",
+                      "description": "Solidity Redefined! The ACME Anvil, A Sturdy Marvel for Your Daily Load. A Weighted Companion to Anchor Your Day.",
+                      "category": "Hardware",
+                      "price": "£4.99"
+                    },
+                    {
+                      "item_id": 4,
+                      "name": "ACME Giant Slingshot",
+                      "description": "A Subtle Propel to Excitement! ACME Giant Slingshot, Gracefully Navigate Distances. A Delicate Leap into Levity.",
+                      "category": "Travel",
+                      "price": "£24.99"
+                    },
+                    {
+                      "item_id": 5,
+                      "name": "ACME Portable Hole",
+                      "description": "Create Space at Your Fingertips! ACME Portable Hole, A Neat Solution for Instant Access. Simplify, Don't Mystify.",
+                      "category": "Hardware",
+                      "price": "£14.99"
+                    },
+                    {
+                      "item_id": 6,
+                      "name": "ACME Earthquake Pills",
+                      "description": "A Subtle Shift in Perspective! ACME Earthquake Pills, Gently Realign Your Outlook. Embrace Terrific Tremors.",
+                      "category": "Nature",
+                      "price": "£9.99"
+                    },
+                    {
+                      "item_id": 7,
+                      "name": "ACME Jet-Propelled Roller Skates",
+                      "description": "Move Smoothly into Momentum! ACME Jet-Propelled Roller Skates, An Elegant Glide into Velocity. Gracefully Navigate the Path Ahead.",
+                      "category": "Travel",
+                      "price": "£19.99"
+                    },
+                    {
+                      "item_id": 8,
+                      "name": "ACME Giant Magnet",
+                      "description": "Magnetic Precision for Orderly Attraction! ACME Giant Magnet, A Controlled Force for Harmonious Interaction. Let Order Prevail.",
+                      "category": "Hardware",
+                      "price": "£4.99"
+                    },
+                    {
+                      "item_id": 9,
+                      "name": "ACME Tornado Seeds",
+                      "description": "Cultivate a Whispering Wind! ACME Tornado Seeds, A Gentle Gust of Nature. Nourish Your Surroundings with a Breath of Freshness.",
+                      "category": "Nature",
+                      "price": "£39.99"
+                    },
+                    {
+                      "item_id": 10,
+                      "name": "ACME Super Outfit",
+                      "description": "Elevate Your Presence! ACME Super Outfit, A Tailored Ensemble for a Dash of Panache. Enhance Your Persona with Subtle Sophistication.",
+                      "category": "Travel",
+                      "price": "£14.99"
+                    },
+                    {
+                      "item_id": 11,
+                      "name": "ACME Invisible Paint",
+                      "description": "See Beyond the Surface! ACME Invisible Paint, A Transparent Coating for Subtle Refinement. A Clear Perspective for Discerning Tastes.",
+                      "category": "Hardware",
+                      "price": "£4.99"
+                    },
+                    {
+                      "item_id": 12,
+                      "name": "ACME Burmese Tiger Trap",
+                      "description": "Capture Elegance in Every Moment! ACME Burmese Tiger Trap, A Graceful Approach to Your Surroundings. An Artful Display of Presence.",
+                      "category": "Pets",
+                      "price": "£34.99"
+                    },
+                    {
+                      "item_id": 13,
+                      "name": "ACME Wildcat",
+                      "description": "Graceful Companion for Refined Pursuits! ACME Wildcat, An Elegant Choice for Discerning Activities. Move with Feline Finesse.",
+                      "category": "Pets",
+                      "price": "£4.99"
+                    },
+                    {
+                      "item_id": 14,
+                      "name": "ACME Dehydrated Boulders",
+                      "description": "Effortless Presence, Effortless Rocks! ACME Dehydrated Boulders, Compact, Refined, and Ready. A Solid Touch for Your Environment.",
+                      "category": "Hardware",
+                      "price": "£29.99"
+                    }
+                    ]}
+        "400":
+          description: Bad request
+      x-swagger-router-controller: Items
+  /items/{item}:
+    summary: gets an item by id
+    get:
+      tags:
+      - item
+      summary: get a singular item by id
+      description: ""
+      operationId: get_item_by_id
+      parameters:
+      - name: item
+        in: path
+        description: The requested item
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example:
+          value: 1
+      responses:
+        "200":
+          description: updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+              examples:
+                list of items:
+                  value: |-
+                    {
+                      "item_id": 1,
+                      "name": "ACME Rocket",
+                      "description": "Embark on an Elevated Journey! The ACME Rocket: A Refined Approach to Soaring Heights. Elevate Your Travels with Ease.",
+                      "category": "Travel",
+                      "price": "£19.99"
+                    }
+        "400":
+          description: Bad request
+        "404":
+          description: Item not found
+      x-swagger-router-controller: Item
+  /items/{type}:
+    summary: items by product type
+    get:
+      tags:
+      - items
+      summary: get a list of item types
+      description: ""
+      operationId: get_items_by_type
+      parameters:
+      - name: type
+        in: path
+        description: The requested item
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example:
+          value: Travel
+      responses:
+        "200":
+          description: updated cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+              example:
+                value: "{item_list:[\n{\n  \"item_id\": 1,\n  \"name\": \"ACME Rocket\"\
+                  ,\n  \"description\": \"Embark on an Elevated Journey! The ACME\
+                  \ Rocket: A Refined Approach to Soaring Heights. Elevate Your Travels\
+                  \ with Ease.\",\n  \"category\": \"Travel\",\n  \"price\": \"£19.99\"\
+                  \n},\n{\n  \"item_id\": 4,\n  \"name\": \"ACME Giant Slingshot\"\
+                  ,\n  \"description\": \"A Subtle Propel to Excitement! ACME Giant\
+                  \ Slingshot, Gracefully Navigate Distances. A Delicate Leap into\
+                  \ Levity.\",\n  \"category\": \"Travel\",\n  \"price\": \"£24.99\"\
+                  \n},\n{\n  \"item_id\": 7,\n  \"name\": \"ACME Jet-Propelled Roller\
+                  \ Skates\",\n  \"description\": \"Move Smoothly into Momentum! ACME\
+                  \ Jet-Propelled Roller Skates, An Elegant Glide into Velocity. Gracefully\
+                  \ Navigate the Path Ahead.\",\n  \"category\": \"Travel\",\n  \"\
+                  price\": \"£19.99\"\n},\n{\n  \"item_id\": 10,\n  \"name\": \"ACME\
+                  \ Super Outfit\",\n  \"description\": \"Elevate Your Presence! ACME\
+                  \ Super Outfit, A Tailored Ensemble for a Dash of Panache. Enhance\
+                  \ Your Persona with Subtle Sophistication.\",\n  \"category\": \"\
+                  Travel\",\n  \"price\": \"£14.99\"\n},\n\n]}   "
+        "400":
+          description: Bad request
+        "404":
+          description: Item not found
+      x-swagger-router-controller: Items
+components:
+  schemas:
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    Customer:
+      required:
+      - city
+      - country
+      - first_name
+      - last_name
+      - password
+      - postcode
+      - street1
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        street1:
+          type: string
+        street2:
+          type: string
+        postcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        password:
+          type: string
+      xml:
+        name: Customer
+    Customer_out:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        street1:
+          type: string
+        street2:
+          type: string
+        postcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+      example:
+        country: country
+        city: city
+        postcode: postcode
+        last_name: last_name
+        street1: street1
+        street2: street2
+        first_name: first_name
+        email: email
+      xml:
+        name: Customer_out
+    CartItem:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+          format: int32
+        cart_id:
+          type: integer
+          format: int32
+        item_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem_item_list'
+      example:
+        cart_id: 6
+        item_list:
+        - price: 19.99
+          name: ACME Rocket
+          id: 1
+        - price: 19.99
+          name: ACME Rocket
+          id: 1
+        customer_id: 0
+    Cart:
+      type: array
+      items:
+        $ref: '#/components/schemas/CartItem'
+    Item:
+      required:
+      - category
+      - description
+      - item_id
+      - name
+      - price
+      type: object
+      properties:
+        item_id:
+          type: integer
+          description: The unique identifier for the item
+          format: int32
+        name:
+          maxLength: 50
+          type: string
+          description: The name of the item
+        description:
+          type: string
+          description: The description of the item
+          format: text
+        category:
+          maxLength: 50
+          type: string
+          description: The category of the item
+        price:
+          type: string
+          description: The price of the item
+          format: money
+      example:
+        item_id: 0
+        price: price
+        name: name
+        description: description
+        category: category
+    ItemList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Item'
+    CartItem_item_list:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: ACME Rocket
+        price:
+          type: number
+          example: 19.99
+      example:
+        price: 19.99
+        name: ACME Rocket
+        id: 1
